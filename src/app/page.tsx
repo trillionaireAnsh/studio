@@ -42,7 +42,7 @@ export default function Home() {
   };
 
   const handleWatchAd = () => {
-    setCoins(prevCoins => prevCoins + 5);
+    setCoins(prevCoins => prevCoins + 1);
     startNewGame();
   };
 
@@ -95,7 +95,7 @@ export default function Home() {
               <>
                 <Button onClick={handleWatchAd} variant="default" size="lg" className="w-full bg-green-600 hover:bg-green-700 text-white font-bold">
                   <PlayCircle className="mr-2 h-5 w-5" />
-                  Watch Ad for New Game (+5 coins)
+                  Watch Ad for New Game (+1 coin)
                 </Button>
                 {coins >= 5 && (
                   <Button onClick={handleSpendCoins} variant="secondary" size="lg" className="w-full font-bold">
