@@ -19,7 +19,8 @@ export const RewardedAd: React.FC<RewardedAdProps> = ({ onAdWatched }) => {
   const [adClosed, setAdClosed] = useState(false);
   const [adError, setAdError] = useState<string | null>(null);
 
-  const adUnitId = process.env.NEXT_PUBLIC_ADMOB_AD_UNIT_ID || '';
+  // Use the official AdMob test ID for rewarded ads during development
+  const adUnitId = "ca-app-pub-3940256099942544/5224354917";
 
   useEffect(() => {
     const script = document.createElement('script');
@@ -37,7 +38,9 @@ export const RewardedAd: React.FC<RewardedAdProps> = ({ onAdWatched }) => {
 
     return () => {
       script.removeEventListener('load', handleScriptLoad);
-      document.head.removeChild(script);
+      if (document.head.contains(script)) {
+        document.head.removeChild(script);
+      }
     };
   }, []);
 
