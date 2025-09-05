@@ -7,12 +7,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { calculateWinner } from '@/lib/game-logic';
 import { RefreshCw, PlayCircle, CircleDollarSign } from 'lucide-react';
 import { AppLogo } from '@/components/icons/AppLogo';
+import { RewardedAd } from '@/components/game/RewardedAd';
 
 export default function Home() {
   const [showSplash, setShowSplash] = useState(true);
   const [board, setBoard] = useState<('X' | 'O' | null)[]>(Array(9).fill(null));
   const [isXNext, setIsXNext] = useState<boolean>(true);
   const [coins, setCoins] = useState<number>(0);
+  const [showAd, setShowAd] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -42,7 +44,14 @@ export default function Home() {
   };
 
   const handleWatchAd = () => {
-    setCoins(prevCoins => prevCoins + 1);
+    setShowAd(true);
+  };
+
+  const onAdWatched = (rewardEarned: boolean) => {
+    setShowAd(false);
+    if (rewardEarned) {
+      setCoins(prevCoins => prevCoins + 1);
+    }
     startNewGame();
   };
 
@@ -79,6 +88,7 @@ export default function Home() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-background p-4 font-body">
+      {showAd && <RewardedAd onAdWatched={onAdWatched} />}
       <Card className="w-full max-w-md shadow-2xl">
         <CardHeader className="text-center space-y-4">
           <div className="absolute top-4 right-4 flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-primary">
