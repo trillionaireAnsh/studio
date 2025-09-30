@@ -88,7 +88,7 @@ export const RewardedAd: React.FC<RewardedAdProps> = ({ onAdWatched }) => {
       className="w-full bg-accent hover:bg-accent/90 text-accent-foreground font-bold"
     >
       <Clapperboard className="mr-2 h-5 w-5" />
-      {isLoading ? 'Loading Ad...' : adLoaded ? 'Watch Ad for New Game' : 'Ad Not Ready'}
+      {isLoading ? 'Loading Ad...' : adLoaded ? 'Watch and Earn Coin' : 'Ad Not Ready'}
     </Button>
   );
 };
