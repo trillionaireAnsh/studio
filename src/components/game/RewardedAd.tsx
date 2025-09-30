@@ -17,6 +17,7 @@ type RewardedAdProps = {
 export const RewardedAd: React.FC<RewardedAdProps> = ({ onAdWatched }) => {
   const [ad, setAd] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [adLoaded, setAdLoaded] = useState(false);
 
   const adUnitId = process.env.NEXT_PUBLIC_ADMOB_AD_UNIT_ID || 'ca-app-pub-3940256099942544/5224354917';
 
@@ -33,30 +34,37 @@ export const RewardedAd: React.FC<RewardedAdProps> = ({ onAdWatched }) => {
     };
 
     return () => {
-      document.head.removeChild(script);
+      if (document.head.contains(script)) {
+        document.head.removeChild(script);
+      }
     };
   }, []);
 
   const loadAd = async () => {
     if (!window.admob) return;
     setIsLoading(true);
+    setAdLoaded(false);
     try {
       const rewardedAd = await window.admob.requestRewardedAd(adUnitId, {
         requestNonPersonalizedAds: true,
       });
       setAd(rewardedAd);
+      setAdLoaded(true);
     } catch (e) {
       console.error(e);
+      setAdLoaded(false);
     } finally {
       setIsLoading(false);
     }
   };
 
   const showAd = async () => {
-    if (ad) {
+    if (ad && adLoaded) {
       try {
         ad.on('reward', () => {
           onAdWatched();
+          // Load a new ad for the next time
+          loadAd();
         });
         await ad.show();
       } catch (e) {
@@ -65,7 +73,8 @@ export const RewardedAd: React.FC<RewardedAdProps> = ({ onAdWatched }) => {
         loadAd();
       }
     } else {
-      // If ad is not loaded, try to load it.
+      // If ad is not loaded, try to load it again.
+      console.log('Ad not ready, trying to load...');
       loadAd();
     }
   };
@@ -73,13 +82,13 @@ export const RewardedAd: React.FC<RewardedAdProps> = ({ onAdWatched }) => {
   return (
     <Button
       onClick={showAd}
-      disabled={isLoading || !ad}
+      disabled={isLoading}
       variant="default"
       size="lg"
       className="w-full bg-accent hover:bg-accent/90 text-accent-foreground font-bold"
     >
       <Clapperboard className="mr-2 h-5 w-5" />
-      {isLoading ? 'Loading Ad...' : !ad ? 'Ad Not Ready' : 'Watch Ad for New Game'}
+      {isLoading ? 'Loading Ad...' : adLoaded ? 'Watch Ad for New Game' : 'Ad Not Ready'}
     </Button>
   );
 };
