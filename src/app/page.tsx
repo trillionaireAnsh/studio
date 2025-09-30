@@ -5,13 +5,15 @@ import { GameBoard } from '@/components/game/GameBoard';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { calculateWinner } from '@/lib/game-logic';
-import { RefreshCw } from 'lucide-react';
+import { RefreshCw, Coins } from 'lucide-react';
 import { AppLogo } from '@/components/icons/AppLogo';
+import { RewardedAd } from '@/components/game/RewardedAd';
 
 export default function Home() {
   const [showSplash, setShowSplash] = useState(true);
   const [board, setBoard] = useState<('X' | 'O' | null)[]>(Array(9).fill(null));
   const [isXNext, setIsXNext] = useState<boolean>(true);
+  const [coins, setCoins] = useState(0);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -38,6 +40,18 @@ export default function Home() {
   const startNewGame = () => {
     setBoard(Array(9).fill(null));
     setIsXNext(true);
+  };
+  
+  const handleUseCoins = () => {
+    if (coins >= 5) {
+      setCoins(coins - 5);
+      startNewGame();
+    }
+  };
+  
+  const handleAdWatched = () => {
+    setCoins(prevCoins => prevCoins + 1);
+    startNewGame();
   };
 
   let status;
@@ -66,6 +80,10 @@ export default function Home() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-background p-4 font-body">
+      <div className="absolute top-4 right-4 flex items-center gap-2 rounded-full bg-card px-4 py-2 shadow-md">
+        <Coins className="h-6 w-6 text-yellow-500" />
+        <span className="text-xl font-bold text-foreground">{coins}</span>
+      </div>
       <Card className="w-full max-w-md shadow-2xl">
         <CardHeader className="text-center space-y-4">
           <CardTitle className="text-4xl font-bold text-primary pt-8">Noughts & Crosses</CardTitle>
@@ -74,10 +92,20 @@ export default function Home() {
         <CardContent className="flex flex-col items-center gap-4">
           <GameBoard board={board} onCellClick={handleCellClick} winnerInfo={winnerInfo} />
           <div className="w-full space-y-2">
-            <Button onClick={startNewGame} variant="default" size="lg" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground font-bold">
-              <RefreshCw className="mr-2 h-5 w-5" />
-              New Game
-            </Button>
+            {isGameOver ? (
+              <>
+                <RewardedAd onAdWatched={handleAdWatched} />
+                <Button onClick={handleUseCoins} disabled={coins < 5} variant="secondary" size="lg" className="w-full font-bold">
+                  <Coins className="mr-2 h-5 w-5" />
+                  Use 5 Coins for New Game
+                </Button>
+              </>
+            ) : (
+               <Button onClick={startNewGame} variant="default" size="lg" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground font-bold">
+                <RefreshCw className="mr-2 h-5 w-5" />
+                New Game
+              </Button>
+            )}
           </div>
         </CardContent>
       </Card>
